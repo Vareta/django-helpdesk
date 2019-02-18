@@ -125,16 +125,16 @@ def send_templated_mail(template_name,
         for filename, filefield in files:
             mime = mimetypes.guess_type(filename)
             if mime[0] is not None and mime[0] == "text/plain":
-                with open(filefield.path, 'r') as attachedfile:
-                    content = attachedfile.read()
-                    msg.attach(filename, content)
+                filefield.open(mode='r')
+                msg.attach(filename, filefield.read())
+                filefield.close()
             else:
                 if six.PY3:
                     msg.attach_file(filefield.path)
                 else:
-                    with open(filefield.path, 'rb') as attachedfile:
-                        content = attachedfile.read()
-                        msg.attach(filename, content)
+                    filefield.open(mode='rb')
+                    msg.attach(filename, filefield.read())
+                    filefield.close()
 
     logger.debug('Sending email to: {!r}'.format(recipients))
 
